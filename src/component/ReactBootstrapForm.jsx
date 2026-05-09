@@ -3,8 +3,6 @@ import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 
 const ReactBootstrapForm = () => {
 
-    console.log("hi everyone")
-
     const [fieldType, setFieldType] = useState('');
     const [fieldName, setFieldName] = useState('');
     const [optionInput, setOptionInput] = useState('');

@@ -1,29 +1,29 @@
 // Chart.jsx
 import { Card, Col, Container, Row } from 'react-bootstrap';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import CharReactchart from './CharReactchart';
 import Barchart from './Barchart';
+const COLORS = {
+    CSK: "#F9CD1B",
+    RCB: "#EC1C24",
+    KKR: "#958f69ff",
+    MI: "#004BA0",
+    SRH: "#FF822A",
+    RR: "#EA1A85",
+    PBKS: "#ED1B24",
+    DC: "#0078BC",
+    GT: "#4d6977ff",
+    LSG: "#566a98ff",
+};
+
+const RADIAN = Math.PI / 180;
+
 const Chart = ({ data, lossesData, nrrData }) => {
 
     const isAnimationActive = false
 
-    const COLORS = {
-        CSK: "#F9CD1B",
-        RCB: "#EC1C24",
-        KKR: "#958f69ff",
-        MI: "#004BA0",
-        SRH: "#FF822A",
-        RR: "#EA1A85",
-        PBKS: "#ED1B24",
-        DC: "#0078BC",
-        GT: "#4d6977ff",
-        LSG: "#566a98ff",
-    };
-
-    const RADIAN = Math.PI / 180;
-
-    const renderCustomLabel = ({
-        cx, cy, midAngle, innerRadius, outerRadius, name, value, payload
+    const renderCustomPieLabel = ({
+        cx, cy, midAngle, innerRadius, outerRadius, name, value
     }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -43,33 +43,6 @@ const Chart = ({ data, lossesData, nrrData }) => {
                 <tspan dx={4}>{value}</tspan>
             </text>
         );
-    };
-
-    const renderCustomLabelwin = ({
-        cx, cy, midAngle, innerRadius, outerRadius, name, value, payload
-    }) => {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-        return (
-            <text
-                x={x}
-                y={y}
-                textAnchor={x > cx ? 'start' : 'end'}
-                dominantBaseline="central"
-                fontSize={11}
-                fontWeight="bold"
-                fill="#333"
-            >
-                <tspan>{name}</tspan>
-                <tspan dx={4}>{value}</tspan>
-            </text>
-        );
-    };
-
-    const MyCustomPie = (props) => {
-        return <Sector {...props} fill={COLORS[props.index % COLORS.length]} />;
     };
 
 
@@ -99,13 +72,10 @@ const Chart = ({ data, lossesData, nrrData }) => {
                                                     cy="50%"
                                                     outerRadius="80%"
                                                     labelLine={false}
-                                                    label={renderCustomLabelwin}
+                                                    label={renderCustomPieLabel}
                                                     isAnimationActive={true}
-                                                >
-                                                    {data.map((entry) => (
-                                                        <Cell key={entry.team} fill={COLORS[entry.team]} />
-                                                    ))}
-                                                </Pie>
+                                                    fill={(entry) => COLORS[entry.team]}
+                                                />
                                                 <Tooltip
                                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
                                                     formatter={(value, name) => [`${value} wins`, name]}
@@ -131,13 +101,10 @@ const Chart = ({ data, lossesData, nrrData }) => {
                                                     cy="50%"
                                                     outerRadius="80%"
                                                     labelLine={false}
-                                                    label={renderCustomLabel}
+                                                    label={renderCustomPieLabel}
                                                     isAnimationActive={isAnimationActive}
-                                                >
-                                                    {lossesData.map((entry) => (
-                                                        <Cell key={entry.team} fill={COLORS[entry.team]} />
-                                                    ))}
-                                                </Pie>
+                                                    fill={(entry) => COLORS[entry.team]}
+                                                />
                                                 <Tooltip
                                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
                                                     formatter={(value, name) => [`${value} losses`, name]}

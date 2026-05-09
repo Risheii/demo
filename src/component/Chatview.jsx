@@ -125,7 +125,7 @@ const Chatview = ({ isOpen, onClose }) => {
     if (!postcode) return false
     try {
       // stagingapi
-      const response = await fetch(`https://stagingapi.surveybooker.co.uk/api/postcode/checkPostCode/${encodeURIComponent(postcode)}/stagingsandbox.surveybooker.co.uk/${propertyType}/${selectedSurvey?.surveyorSurveyTypeID || 1121}`, {
+      const response = await fetch(`https://stagingapi.surveybooker.co.uk/api/postcode/checkPostCode/${encodeURIComponent(postcode)}/stagingsandbox.surveybooker.co.uk/${encodeURIComponent(propertyType)}/${encodeURIComponent(selectedSurvey?.surveyorSurveyTypeID || 1121)}`, {
         headers: {
           'Accept': 'application/json'
         }
@@ -413,7 +413,7 @@ const Chatview = ({ isOpen, onClose }) => {
 
       // 4. Get Summary
       try {
-        await fetch(`/proxy/api/summaryPoints/getSummary?staticSurveyTypeID=${selectedSurvey?.staticSurveyTypeID}`)
+        await fetch(`/proxy/api/summaryPoints/getSummary?staticSurveyTypeID=${encodeURIComponent(selectedSurvey?.staticSurveyTypeID)}`)
       } catch (e) {
         console.warn('Summary fetch failed', e)
       }
