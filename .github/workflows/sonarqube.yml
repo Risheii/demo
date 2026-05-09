@@ -5,12 +5,8 @@ on:
     branches:
       - main
 
-  pull_request:
-    types: [opened, synchronize, reopened]
-
 jobs:
   sonarqube:
-    name: SonarQube Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +22,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Get changed files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ',' | sed 's/,$//')
+          echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
+
+      - name: Print changed files
+        run: echo $CHANGED_FILES
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.inclusions=${{ env.CHANGED_FILES }}
