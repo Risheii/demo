@@ -25,7 +25,7 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '^src/.*\.(js|jsx|ts|tsx)$' | paste -sd "," -)
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ',' | sed 's/,$//')
           echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
 
       - name: Print changed files

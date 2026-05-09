@@ -9,6 +9,9 @@ import GlobalChatBot from './component/GlobalChatBot'
 
 function App() {
 
+  console.log("app.jsx is running")
+  const a = 20;
+
   return (
     <>
       <BrowserRouter>
