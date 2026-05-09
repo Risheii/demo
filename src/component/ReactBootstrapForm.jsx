@@ -5,6 +5,8 @@ const ReactBootstrapForm = () => {
 
     console.log("hi everyone")
 
+    const data10 = "data10";
+
     const [fieldType, setFieldType] = useState('');
     const [fieldName, setFieldName] = useState('');
     const [optionInput, setOptionInput] = useState('');
