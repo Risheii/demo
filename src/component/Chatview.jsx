@@ -468,11 +468,13 @@ const Chatview = ({ isOpen, onClose }) => {
     // 2. Show loading dots while waiting for API
     setLoading(true)
 
+    console.log(import.meta.env.VITE_CAL_API_KEY, "hello world testinggggggggg")
+
     const data = {
       user_id: "jkbhbnknj",
       message: userText,
       collection_name: "default",
-      cal_api_key: "cal_live_22f1f52f330fd02003192c7811148445",
+      cal_api_key: import.meta.env.VITE_CAL_API_KEY,
       event_type_id: "3416412"
     }
 
@@ -516,7 +518,7 @@ const Chatview = ({ isOpen, onClose }) => {
     }
 
     // Fallback bot reply
-    setHistory(prev => [...prev, { sender: 'bot', text: json.response.response || "I've received your message. You can also select a survey type below to continue." }])
+    setHistory(prev => [...prev, { sender: 'bot', text: json?.response?.response || "I've received your message. You can also select a survey type below to continue." }])
   }
 
   const handledeletechat = async () => {
