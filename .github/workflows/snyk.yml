@@ -33,3 +33,6 @@ jobs:
 
       - name: Run code scan
         run: snyk code test || true
+
+      - name: Upload Snapshot to Dashboard
+        run: snyk monitor
