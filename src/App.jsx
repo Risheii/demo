@@ -10,7 +10,7 @@ import ChatbotPage from './pages/ChatbotPage'
 
 const Layout = ({ children }) => {
   const location = useLocation()
-  const isChatbot = location.pathname === '/chatbot'
+  const isChatbot = location.pathname.startsWith('/chatbot')
 
   return (
     <>
