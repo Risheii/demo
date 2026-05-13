@@ -3,7 +3,7 @@ import './Chatview.css'
 import axios from 'axios'
 import { FaRegTrashCan } from 'react-icons/fa6'
 
-const Chatview = ({ isOpen, onClose }) => {
+const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
   const [currentStep, setCurrentStep] = useState('type') // 'type', 'sub-option', 'form', 'success'
   const [propertyType, setPropertyType] = useState(null) // 'Residential' or 'Commercial'
   const [surveys, setSurveys] = useState([])
@@ -653,7 +653,7 @@ const Chatview = ({ isOpen, onClose }) => {
   const showPropertyDetails = (selectedAddressKey || isManualAddress) && isValidPostcode
 
   return (
-    <div className={`chatbot-container ${isOpen ? 'open' : 'closed'}`}>
+    <div className={`chatbot-container ${isOpen ? 'open' : 'closed'} ${isEmbedded ? 'embedded-mode' : ''}`}>
       {/* Header */}
       <div className="chatbot-header">
         <div className="chatbot-avatar">
@@ -683,9 +683,11 @@ const Chatview = ({ isOpen, onClose }) => {
           <button className='chatbot-clear-btn bg-dark' onClick={handledeletechat}>
             <FaRegTrashCan className='text-white' size={15} />
           </button>
-          <button className="chatbot-close-btn" onClick={onClose}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-          </button>
+          {!isEmbedded && (
+            <button className="chatbot-close-btn" onClick={onClose}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            </button>
+          )}
         </div>
       </div>
 
