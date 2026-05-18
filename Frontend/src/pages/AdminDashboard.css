@@ -1,0 +1,33 @@
+.admin-dashboard {
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 100px);
+}
+
+.admin-nav .nav-link {
+    color: #495057;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.admin-nav .nav-link:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    color: #0d6efd;
+}
+
+.admin-nav .nav-link.active {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+}
+
+.dashboard-header h2 {
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    /* box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; */
+}
