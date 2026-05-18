@@ -46,9 +46,48 @@ export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
     }
 });
 
+export const updateProfile = createAsyncThunk('auth/updateProfile', async (profileData, thunkAPI) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.put('/api/auth/edit-profile', profileData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response?.data || 'Update profile failed');
+    }
+});
+
+export const uploadProfileImage = createAsyncThunk('auth/uploadProfileImage', async (formData, thunkAPI) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('/api/auth/upload-profile-image', formData, {
+            headers: { 
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response?.data || 'Upload image failed');
+    }
+});
+
+const token = localStorage.getItem('token');
+let user = null;
+if (token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        user = JSON.parse(atob(base64));
+    } catch (e) {
+        console.error("Failed to decode token", e);
+    }
+}
+
 const initialState = {
-    user: null,
-    token: localStorage.getItem('token') || null,
+    user: user,
+    token: token,
     loading: false,
     error: null,
 };
@@ -90,6 +129,12 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = null;
                 state.token = null;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.user = action.payload;
+            })
+            .addCase(uploadProfileImage.fulfilled, (state, action) => {
+                state.user = action.payload;
             });
     }
 });

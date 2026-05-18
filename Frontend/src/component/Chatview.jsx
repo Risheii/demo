@@ -74,8 +74,10 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [history, loading])
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [history, loading, isOpen])
 
   // Debounced postcode validation
   useEffect(() => {

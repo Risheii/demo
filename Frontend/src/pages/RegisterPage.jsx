@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 const RegisterPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const RegisterPage = () => {
         setLoading(true);
         setError(null);
         try {
-            await axios.post('/api/auth/register', { username: name, email, password });
+            await axios.post('/api/auth/register', { username: name, email, password, phone });
             navigate('/login');
         } catch (err) {
             setError(err.response?.data?.error || 'Registration failed');
@@ -57,6 +58,16 @@ const RegisterPage = () => {
                                 placeholder="Enter email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label className='fw-semibold'>Phone</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter phone number"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                                 required
                             />
                         </Form.Group>

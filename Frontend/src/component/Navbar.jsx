@@ -82,7 +82,18 @@ function AppNavbar() {
                             <Nav className="d-flex flex-row align-items-center gap-2 mt-3">
                                 {user ? (
                                     <>
-                                        <span className="fw-medium text-secondary me-2">Hello, {user.username || user.name || 'User'}</span>
+                                        <Nav.Link as={Link} to="/profile" className="p-0 me-2 d-flex align-items-center">
+                                            {user.profileImage ? (
+                                                <img 
+                                                    src={user.profileImage.startsWith('http') ? user.profileImage : encodeURI(`/uploads/${user.profileImage}`)} 
+                                                    alt="profile" 
+                                                    className="rounded-circle" 
+                                                    style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <i className="bi bi-person-circle fs-3 text-secondary"></i>
+                                            )}
+                                        </Nav.Link>
                                         <Button
                                             variant="outline-danger"
                                             size="sm"

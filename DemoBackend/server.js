@@ -7,6 +7,7 @@ const router = require('./routes/form');
 const SeedAdmin = require('./seeders/AdminSeed');
 const AdminRouter = require('./routes/AdminRouter');
 const ManagerRouter = require('./routes/ManagerRoutes');
+const path = require('path');
 require('./models/index');
 require('dotenv').config()
 
@@ -17,6 +18,7 @@ const app = express();
 //middleware
 app.use(express.json());
 app.use(cookieParser())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,

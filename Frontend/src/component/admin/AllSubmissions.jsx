@@ -56,7 +56,8 @@ const AllSubmissions = () => {
                         <thead className="bg-light">
                             <tr>
                                 <th className="border-0 rounded-start">ID</th>
-                                <th className="border-0">User Email</th>
+                                <th className="border-0">User</th>
+                                <th className="border-0">Mobile</th>
                                 <th className="border-0">Form Details</th>
                                 <th className="border-0">Submitted At</th>
                                 <th className="border-0 rounded-end text-end">Status</th>
@@ -66,14 +67,31 @@ const AllSubmissions = () => {
                             {submissions.map((sub) => (
                                 <tr key={sub.id}>
                                     <td className="fw-medium text-secondary">#{sub.id}</td>
-                                    <td>{sub.user_email || 'N/A'}</td>
+                                    <td>
+                                        <div className="fw-bold">{sub.name || 'N/A'}</div>
+                                        <div className="text-muted small">{sub.email}</div>
+                                    </td>
+                                    <td>{sub.mobile || 'N/A'}</td>
                                     <td>
                                         <div className="small">
-                                            {sub.fields && sub.fields.map((field, idx) => (
-                                                <div key={idx}>
-                                                    <span className="text-muted">{field.fieldName}:</span> {field.fieldValue}
-                                                </div>
-                                            ))}
+                                            {sub.fields && sub.fields.map((field, idx) => {
+                                                let displayValue = field.field_value;
+                                                if (displayValue && displayValue.startsWith('[')) {
+                                                    try {
+                                                        const parsed = JSON.parse(displayValue);
+                                                        if (Array.isArray(parsed)) {
+                                                            displayValue = parsed.join(', ');
+                                                        }
+                                                    } catch (e) {
+                                                        // ignore
+                                                    }
+                                                }
+                                                return (
+                                                    <div key={idx}>
+                                                        <span className="text-muted">{field.field_name}:</span> {displayValue}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </td>
                                     <td>{new Date(sub.createdAt).toLocaleDateString()}</td>
@@ -86,7 +104,7 @@ const AllSubmissions = () => {
                             ))}
                             {submissions.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-4 text-muted">
+                                    <td colSpan="6" className="text-center py-4 text-muted">
                                         No submissions found.
                                     </td>
                                 </tr>

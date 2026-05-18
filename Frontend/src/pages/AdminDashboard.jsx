@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Nav, Card, Tab } from 'react-bootstrap';
 import AllSubmissions from '../component/admin/AllSubmissions';
+import AllUsers from '../component/admin/AllUsers';
 import ManagerManagement from '../component/admin/ManagerManagement';
 import ReactBootstrapForm from '../component/ReactBootstrapForm'; // Reusing for "My Submissions"
 import './AdminDashboard.css';
@@ -28,8 +29,13 @@ const AdminDashboard = () => {
                                             </Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item>
+                                            <Nav.Link eventKey="all-users" className="p-3 border-bottom rounded-0">
+                                                <i className="bi bi-people me-2"></i> All Users
+                                            </Nav.Link>
+                                        </Nav.Item>
+                                        <Nav.Item>
                                             <Nav.Link eventKey="manager-management" className="p-3 border-bottom rounded-0">
-                                                <i className="bi bi-people me-2"></i> Manager Management
+                                                <i className="bi bi-person-badge me-2"></i> Manager Management
                                             </Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item>
@@ -45,6 +51,9 @@ const AdminDashboard = () => {
                             <Tab.Content>
                                 <Tab.Pane eventKey="all-submissions">
                                     <AllSubmissions />
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="all-users">
+                                    <AllUsers />
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="manager-management">
                                     <ManagerManagement />

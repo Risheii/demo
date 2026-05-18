@@ -1,28 +1,31 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
+const path = require('path');
+const fs = require('fs');
 
 module.exports.register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, phone } = req.body;
 
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !phone) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        const isexistuser = await User.findOne({ where: { email } });
+        const isexistuser = await User.findOne({ where: { email: email, phone: phone } });
         if (isexistuser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({ username, email, password: hashedPassword });
+        const user = await User.create({ username, email, password: hashedPassword, phone });
 
         const response = {
             id: user.id,
             username: user.username,
             email: user.email,
+            phone: user.phone,
             createdAt: user.createdAt,
         };
         return res.status(201).json({ message: 'User created successfully', data: response });
@@ -55,9 +58,10 @@ module.exports.loginSession = async (req, res) => {
             username: isuser.username,
             email: isuser.email,
             role: isuser.role,
+            phone: isuser.phone
         };
 
-        return res.status(200).json({ message: 'Login successful', data: req.session.userId });
+        return res.status(200).json({ message: 'Login successful', data: req.session.user });
 
     } catch (error) {
         console.error('Error in loginSession:', error.message);
@@ -152,15 +156,77 @@ module.exports.logoutJwt = (req, res) => {
     }
 };
 
-module.exports.getMeJwt = (req, res) => {
+module.exports.getMeJwt = async (req, res) => {
     try {
-        console.log(req.user);
-        if (!req.user) {
-            return res.status(401).json({ message: 'Not unauthenicated' });
+        const user = await User.findOne({ where: { id: req.user.id } });
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
         }
-        return res.status(200).json({ message: 'User data', data: req.user });
+        return res.status(200).json({ message: 'User data', data: user });
     } catch (error) {
         console.error('Error in getMeJwt:', error.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+
+module.exports.editProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const { username, mobile } = req.body;
+
+        const user = await User.findOne({ where: { id: userId } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        if (username) {
+            user.username = username;
+        }
+
+        if (mobile) {
+            user.phone = mobile;
+        }
+        await user.save();
+        return res.status(200).json({ message: 'Profile updated successfully', data: user });
+    } catch (error) {
+        console.log('error while editing profile', error)
+        return res.status(500).json({ message: 'Internal server error' })
+    }
+}
+
+module.exports.profileImage = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await User.findOne({ where: { id: userId } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        if (!req.file) {
+            return res.status(400).json({ message: 'Please upload a file' })
+        }
+
+        if (user.profileImage) {
+            const oldImagePath = path.resolve(__dirname, '../uploads', user.profileImage);
+
+            try {
+                fs.unlinkSync(oldImagePath);
+            } catch (err) {
+                if (err.code !== 'ENOENT') {
+                    console.error('Error deleting old image:', err.message);
+                }
+            }
+        }
+
+        user.profileImage = req.file.filename;
+
+        await user.save();
+        return res.status(200).json({ message: 'Profile image updated successfully', data: user });
+    } catch (error) {
+        console.log('error while updating profile image', error)
+        return res.status(500).json({ message: 'Internal server error' })
+    }
+}

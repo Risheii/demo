@@ -12,6 +12,7 @@ import GlobalChatBot from './component/GlobalChatBot'
 import ChatbotPage from './pages/ChatbotPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProfilePage from './pages/ProfilePage'
 
 import AdminDashboard from './pages/AdminDashboard'
 import ManagerDashboard from './pages/ManagerDashboard'
@@ -45,11 +46,17 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path='/' element={<ReactBootstrapForm />} />
+          {/* User Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+            <Route path='/' element={<ReactBootstrapForm />} />
+          </Route>
           <Route path='/normal' element={<Form />} />
           <Route path='/chart' element={<ChartPage />} />
           <Route path='/practice' element={<Practice />} />
           <Route path='/chatbot' element={<ChatbotPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path='/profile' element={<ProfilePage />} />
+          </Route>
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
 
