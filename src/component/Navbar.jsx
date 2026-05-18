@@ -1,8 +1,27 @@
 import { Navbar, Nav, NavDropdown, Container, Button, Offcanvas } from 'react-bootstrap'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { logoutUser } from '../store/authSlice'
+import ConfirmationPopup from './ConfirmationPopup'
 
 function AppNavbar() {
     const { pathname } = useLocation()
+    const dispatch = useDispatch()
+    const { user } = useSelector(state => state.auth)
+    const navigate = useNavigate()
+
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
+    const handleLogoutClick = () => {
+        setShowLogoutConfirm(true)
+    }
+
+    const confirmLogout = () => {
+        dispatch(logoutUser())
+        setShowLogoutConfirm(false)
+        navigate('/login')
+    }
 
     return (
         <>
@@ -29,67 +48,63 @@ function AppNavbar() {
                         <Offcanvas.Body>
 
                             <Nav className="flex-grow-1 gap-1">
-                                <Nav.Link
-                                    as={Link} to="/"
-                                    active={pathname === '/'}
-                                    className="fw-medium d-flex align-items-center"
-                                >
-                                    ReactBootstrapForm
-                                </Nav.Link>
 
-                                <Nav.Link
-                                    as={Link} to="/normal"
-                                    active={pathname === '/normal'}
-                                    className="fw-medium d-flex align-items-center"
-                                >
-                                    NormalForm
-                                </Nav.Link>
+                                {user?.role === 'user' && (
+                                    <Nav.Link
+                                        as={Link} to="/"
+                                        active={pathname === '/'}
+                                        className="fw-medium d-flex align-items-center"
+                                    >
+                                        ReactBootstrapForm
+                                    </Nav.Link>
+                                )}
+                                {user?.role === 'admin' && (
+                                    <Nav.Link
+                                        as={Link} to="/admin/dashboard"
+                                        active={pathname === '/admin/dashboard'}
+                                        className="fw-medium d-flex align-items-center text-primary"
+                                    >
+                                        <i className="bi bi-speedometer2 me-1"></i> Admin Panel
+                                    </Nav.Link>
+                                )}
 
-                                <NavDropdown
-                                    className='fw-medium d-flex align-items-center'
-                                    title="Dropdown"
-                                    id="offcanvas-dropdown"
-                                    active={pathname.startsWith('/services')}
-                                >
-                                    <NavDropdown.Item as={Link} to="/services/web">
-                                        Dropdown1
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item as={Link} to="/services/app">
-                                        Dropdown2
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item as={Link} to="/services/design">
-                                        Dropdown3
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-
-                                <Nav.Link
-                                    as={Link} to="/chart"
-                                    active={pathname === '/chart'}
-                                    className="fw-medium d-flex align-items-center"
-                                >
-                                    Chart
-                                </Nav.Link>
-
-                                <Nav.Link
-                                    as={Link} to="/practice"
-                                    active={pathname === '/practice'}
-                                    className="fw-medium d-flex align-items-center"
-                                >
-                                    Practice
-                                </Nav.Link>
+                                {user?.role === 'manager' && (
+                                    <Nav.Link
+                                        as={Link} to="/manager/dashboard"
+                                        active={pathname === '/manager/dashboard'}
+                                        className="fw-medium d-flex align-items-center text-info"
+                                    >
+                                        <i className="bi bi-person-workspace me-1"></i> Manager Panel
+                                    </Nav.Link>
+                                )}
                             </Nav>
 
                             <Nav className="d-flex flex-row align-items-center gap-2 mt-3">
-                                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                                <Button
-                                    as={Link} to="/register"
-                                    variant="primary"
-                                    size="sm"
-                                    className="px-3 rounded-3"
-                                >
-                                    Sign Up
-                                </Button>
+                                {user ? (
+                                    <>
+                                        <span className="fw-medium text-secondary me-2">Hello, {user.username || user.name || 'User'}</span>
+                                        <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            className="px-3 rounded-3"
+                                            onClick={handleLogoutClick}
+                                        >
+                                            Logout
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                                        <Button
+                                            as={Link} to="/register"
+                                            variant="primary"
+                                            size="sm"
+                                            className="px-3 rounded-3"
+                                        >
+                                            Sign Up
+                                        </Button>
+                                    </>
+                                )}
                             </Nav>
 
                         </Offcanvas.Body>
@@ -97,6 +112,15 @@ function AppNavbar() {
 
                 </Container>
             </Navbar>
+
+            <ConfirmationPopup
+                show={showLogoutConfirm}
+                onHide={() => setShowLogoutConfirm(false)}
+                onConfirm={confirmLogout}
+                title="Confirm Logout"
+                body="Are you sure you want to logout?"
+                confirmText="Logout"
+            />
         </>
     )
 }

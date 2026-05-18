@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,15 +34,17 @@
         /* This is the container for the iframe */
         #chatbot-wrapper {
             position: fixed;
-            bottom: 100px; /* Sits above the button */
+            bottom: 100px;
+            /* Sits above the button */
             right: 28px;
             width: 480px;
             height: 720px;
             max-width: calc(100vw - 40px);
             max-height: calc(100vh - 120px);
             z-index: 999;
-            display: none; /* Hidden by default */
-            
+            display: none;
+            /* Hidden by default */
+
             /* Add some nice shadow to the container itself since the iframe is transparent */
             box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
             border-radius: 24px;
@@ -61,17 +64,16 @@
         }
     </style>
 </head>
+
 <body>
 
     <h1>Host Website Simulation</h1>
     <p>This page simulates how your senior will embed the chatbot.</p>
     <p>They control the floating button, the open/close state, and the width/height of the wrapper.</p>
-    
+
     <!-- The Chatbot Container -->
     <div id="chatbot-wrapper">
-        <iframe 
-            src="/chatbot" 
-            class="chatbot-iframe"
+        <iframe src="https://ocelot-equal-hunting.ngrok-free.dev/chatbot" class="chatbot-iframe"
             title="SurveyBooker Chatbot">
         </iframe>
     </div>
@@ -79,7 +81,8 @@
     <!-- The Launcher Button -->
     <button id="custom-launcher" onclick="toggleChat()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l4.93-1.37C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
+            <path
+                d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l4.93-1.37C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
         </svg>
     </button>
 
@@ -90,4 +93,5 @@
         }
     </script>
 </body>
+
 </html>

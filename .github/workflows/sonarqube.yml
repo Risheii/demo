@@ -28,7 +28,7 @@ jobs:
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ',' | sed 's/,$//')
           echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
 
-      - name: Print changed files
+      - name: Print changed files 
         run: echo $CHANGED_FILES
 
       - name: SonarQube Scan

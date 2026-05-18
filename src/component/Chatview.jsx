@@ -4,6 +4,32 @@ import axios from 'axios'
 import { FaRegTrashCan } from 'react-icons/fa6'
 
 const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
+  const [config, setConfig] = useState({
+    host: 'stagingsandbox.surveybooker.co.uk',
+    apiBase: 'https://stagingapi.surveybooker.co.uk',
+    chatEndpoint: 'https://dove-settling-vigorously.ngrok-free.app/chat',
+    companyName: 'SurveyBooker AI',
+    primaryColor: '#4f8ef7',
+    sandboxHost: 'sandbox.surveybooker.co.uk',
+    sandboxApiBase: 'https://sandboxapi.surveybooker.co.uk'
+  })
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Support both our testing 'CHATBOT_CONFIG' type and the senior's 'CHATBOT_INIT' type
+      if (event.data && (event.data.type === 'CHATBOT_CONFIG' || event.data.type === 'CHATBOT_INIT')) {
+        console.log('Received config from host:', event.data)
+
+        // Handle both flat payloads (our initial testing) and nested 'payload' objects (senior's format)
+        const payloadData = event.data.payload || event.data;
+
+        setConfig(prev => ({ ...prev, ...payloadData }))
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
   const [currentStep, setCurrentStep] = useState('type') // 'type', 'sub-option', 'form', 'success'
   const [propertyType, setPropertyType] = useState(null) // 'Residential' or 'Commercial'
   const [surveys, setSurveys] = useState([])
@@ -69,7 +95,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
       setLoading(true)
       try {
         // Fetch all surveys to extract unique types
-        const surveyRes = await fetch('https://stagingapi.surveybooker.co.uk/api/surveyorSurveyType/stagingsandbox.surveybooker.co.uk', {
+        const surveyRes = await fetch(`${config.apiBase}/api/surveyorSurveyType/${config.host}`, {
           headers: { 'Accept': 'application/json' }
         })
         const surveyJson = await surveyRes.json()
@@ -95,7 +121,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
         }
 
         // Fetch static questions
-        const staticRes = await fetch('https://stagingapi.surveybooker.co.uk/api/dynamicQuestion/getStaticQuestion?host=stagingsandbox.surveybooker.co.uk', {
+        const staticRes = await fetch(`${config.apiBase}/api/dynamicQuestion/getStaticQuestion?host=${config.host}`, {
           headers: { 'Accept': 'application/json' }
         })
         const staticJson = await staticRes.json()
@@ -125,7 +151,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
     if (!postcode) return false
     try {
       // stagingapi
-      const response = await fetch(`https://stagingapi.surveybooker.co.uk/api/postcode/checkPostCode/${encodeURIComponent(postcode)}/stagingsandbox.surveybooker.co.uk/${encodeURIComponent(propertyType)}/${encodeURIComponent(selectedSurvey?.surveyorSurveyTypeID || 1121)}`, {
+      const response = await fetch(`${config.apiBase}/api/postcode/checkPostCode/${encodeURIComponent(postcode)}/${config.host}/${encodeURIComponent(propertyType)}/${encodeURIComponent(selectedSurvey?.surveyorSurveyTypeID || 1121)}`, {
         headers: {
           'Accept': 'application/json'
         }
@@ -152,7 +178,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
     const isValid = await validatePostcode(formData.postcode)
 
     try {
-      const response = await fetch(`/proxy/api/company/getAddressKey?postcode=${encodeURIComponent(formData.postcode)}&for=postcode&host=stagingsandbox.surveybooker.co.uk`, {
+      const response = await fetch(`${config.apiBase}/api/company/getAddressKey?postcode=${encodeURIComponent(formData.postcode)}&for=postcode&host=${config.host}`, {
         headers: {
           'Accept': 'application/json'
         }
@@ -223,7 +249,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
       }))
 
       // 2. Fetch dynamic questions
-      const response = await fetch('https://sandboxapi.surveybooker.co.uk/api/dynamicQuestion/getQuestion?orderQuestion=ASC&host=sandbox.surveybooker.co.uk', {
+      const response = await fetch(`${config.sandboxApiBase}/api/dynamicQuestion/getQuestion?orderQuestion=ASC&host=${config.sandboxHost}`, {
         headers: { 'Accept': 'application/json' }
       })
       const json = await response.json()
@@ -289,11 +315,11 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
     setLoading(true)
     setError(null)
 
-    const host = 'stagingsandbox.surveybooker.co.uk'
+    const host = config.host
 
     try {
       // 1. Account Lookup
-      const lookupRes = await fetch('https://stagingapi.surveybooker.co.uk/api/auth/accountlookup?for=quote', {
+      const lookupRes = await fetch(`${config.apiBase}/api/auth/accountlookup?for=quote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ email: formData.email, host })
@@ -308,7 +334,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
       // Successful API sends name WITH salutation prefix: "Mr Hello World"
       const fullName = regSalutation ? `${regSalutation} ${fName} ${lName}`.trim() : `${fName} ${lName}`.trim()
 
-      const registerRes = await fetch('https://stagingapi.surveybooker.co.uk/api/auth/userRegister', {
+      const registerRes = await fetch(`${config.apiBase}/api/auth/userRegister`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
@@ -401,7 +427,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
       }
       console.log('Final Manage Quote Payload:', manageQuotePayload)
 
-      const quoteRes = await fetch('https://stagingapi.surveybooker.co.uk/api/manageQuote', {
+      const quoteRes = await fetch(`${config.apiBase}/api/manageQuote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(manageQuotePayload)
@@ -413,7 +439,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
 
       // 4. Get Summary
       try {
-        await fetch(`/proxy/api/summaryPoints/getSummary?staticSurveyTypeID=${encodeURIComponent(selectedSurvey?.staticSurveyTypeID)}`)
+        await fetch(`${config.apiBase}/api/summaryPoints/getSummary?staticSurveyTypeID=${encodeURIComponent(selectedSurvey?.staticSurveyTypeID)}`)
       } catch (e) {
         console.warn('Summary fetch failed', e)
       }
@@ -468,19 +494,24 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
     // 2. Show loading dots while waiting for API
     setLoading(true)
 
-    console.log(import.meta.env.VITE_CAL_API_KEY, "hello world testinggggggggg")
+    // Filter out internal routing URLs so we only send the essential details received from the host
+    const {
+      host, apiBase, chatEndpoint, companyName, primaryColor,
+      sandboxHost, sandboxApiBase, type, ...essentialPayload
+    } = config;
 
     const data = {
-      user_id: "jkbhbnknj",
+      user_id: essentialPayload.userId || "jkbhbnknj",
       message: userText,
       collection_name: "default",
       cal_api_key: import.meta.env.VITE_CAL_API_KEY,
-      event_type_id: "3416412"
+      event_type_id: "3416412",
+      ...essentialPayload
     }
 
     let json = {}
     try {
-      const res = await axios.post('https://dove-settling-vigorously.ngrok-free.app/chat', data)
+      const res = await axios.post(config.chatEndpoint, data)
       json = res.data
     } catch (error) {
       console.log(error)
@@ -523,11 +554,18 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
 
   const handledeletechat = async () => {
 
+    // Filter out internal routing URLs to get only the essential payload
+    const {
+      host, apiBase, chatEndpoint, companyName, primaryColor,
+      sandboxHost, sandboxApiBase, type, ...essentialPayload
+    } = config;
+
     const data = {
-      user_id: "jkbhbnknj",
+      user_id: essentialPayload.userId || "jkbhbnknj",
     }
     try {
-      const res = await axios.post('https://dove-settling-vigorously.ngrok-free.app/clear', data)
+      const clearUrl = config.chatEndpoint.replace(/\/chat\/?$/, '/clear')
+      const res = await axios.post(clearUrl, data)
       const json = await res.data
 
       if (json.status === 'success') {
@@ -660,7 +698,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l4.93-1.37C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" /></svg>
         </div>
         <div style={{ flex: 1 }}>
-          <div className="chatbot-title">SurveyBooker AI</div>
+          <div className="chatbot-title">{config.companyName}</div>
           <div className="chatbot-status">
             <span className="chatbot-status-dot" />
             <span className="chatbot-status-text">Online · Typically replies instantly</span>
@@ -901,8 +939,9 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
                     <button key={survey.surveyorSurveyTypeID} className="option-chip vertical-chip" onClick={() => handleSurveySelect(survey)}>
                       <span className="chip-icon">
                         <img
-                          src={`https://sandbox.surveybooker.co.uk/images/survey-icons/${survey.staticSurveyType.icon || 'default.png'}`}
-                          alt="icon"
+                          alt={survey.staticSurveyType.staticSurveyTypeName}
+                          src={`https://${config.sandboxHost}/images/survey-icons/${survey.staticSurveyType.icon || 'default.png'}`}
+                          className="survey-icon"
                           onError={(e) => { e.target.src = 'https://img.icons8.com/ios/50/4f8ef7/document.png' }}
                           style={{ width: 16, height: 16 }}
                         />

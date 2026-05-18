@@ -14,6 +14,10 @@ export default defineConfig({
           'Referer': 'https://stagingsandbox.surveybooker.co.uk/',
           'Origin': 'https://stagingsandbox.surveybooker.co.uk',
         }
+      },
+      '/api': {
+        target: 'http://localhost:2001',
+        changeOrigin: true
       }
     }
   }
