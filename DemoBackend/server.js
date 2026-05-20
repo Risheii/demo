@@ -8,6 +8,7 @@ const SeedAdmin = require('./seeders/AdminSeed');
 const AdminRouter = require('./routes/AdminRouter');
 const ManagerRouter = require('./routes/ManagerRoutes');
 const path = require('path');
+const { connectRedis } = require('./config/redis');
 require('./models/index');
 require('dotenv').config()
 
@@ -45,6 +46,7 @@ app.use('/api/manager', ManagerRouter)
 const start = async () => {
     try {
         await connectDB();
+        await connectRedis();
 
         require('./models/User');
         await sequelize.sync({ force: false });

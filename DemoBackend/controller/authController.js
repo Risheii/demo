@@ -3,6 +3,7 @@ const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
+const { redisClient } = require('../config/redis');
 
 module.exports.register = async (req, res) => {
     try {
@@ -20,6 +21,9 @@ module.exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({ username, email, password: hashedPassword, phone });
+
+        await redisClient.del('admin:users:all');
+        console.log('🗑️ Users cache invalidated — new user registered');
 
         const response = {
             id: user.id,
@@ -118,7 +122,7 @@ module.exports.loginJwt = async (req, res) => {
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role, username: user.username },
             process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+            { expiresIn: process.env.JWT_EXPIRES_IN ? process.env.JWT_EXPIRES_IN.replace(/['"\s]/g, '') : '7d' }
         );
 
         res.cookie('token', token, {
@@ -158,6 +162,7 @@ module.exports.logoutJwt = (req, res) => {
 
 module.exports.getMeJwt = async (req, res) => {
     try {
+        console.log(req.ip, "from the get me controlller backend/////////////////////");
         const user = await User.findOne({ where: { id: req.user.id } });
         if (!user) {
             return res.status(401).json({ message: 'User not found' });

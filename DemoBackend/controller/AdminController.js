@@ -1,3 +1,4 @@
+const { redisClient } = require("../config/redis");
 const { User, FormSubmission, FormField } = require("../models");
 const bcrypt = require("bcryptjs");
 
@@ -23,6 +24,9 @@ const CreateManager = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({ username: name, email, password: hashedPassword, role });
+        await redisClient.del('admin:users:all');
+        console.log('🗑️ Users cache invalidated');
+
         return res.status(201).json({ message: "Manager created successfully", data: user });
 
     } catch (error) {
@@ -57,6 +61,9 @@ const UpdateManager = async (req, res) => {
         user.role = role;
 
         await user.save();
+        await redisClient.del('admin:users:all');
+        console.log('🗑️ Users cache invalidated');
+
         return res.status(200).json({ message: "Manager updated successfully", data: user });
 
     } catch (error) {
@@ -82,6 +89,8 @@ const DeleteManager = async (req, res) => {
         }
 
         await user.destroy();
+        await redisClient.del('admin:users:all');
+        console.log('🗑️ Users cache invalidated');
         return res.status(200).json({ message: "Manager deleted successfully" });
 
     } catch (error) {
