@@ -214,6 +214,8 @@ module.exports.profileImage = async (req, res) => {
             return res.status(400).json({ message: 'Please upload a file' })
         }
 
+        console.log(req.file, "from the profile image controller backend/////////////////////");
+
         if (user.profileImage) {
             const oldImagePath = path.resolve(__dirname, '../uploads', user.profileImage);
 

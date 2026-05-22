@@ -26,7 +26,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
+        secure: false,  
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24
     }
@@ -62,6 +62,6 @@ const start = async () => {
         console.error('Error starting server:', error.message);
         process.exit(1);
     }
-}
+} 
 
 start();
