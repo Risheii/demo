@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
       {!isChatbot && <AppNavbar />}
       {children}
       {!isChatbot && <AppFooter />}
-      {/* {!isChatbot && <GlobalChatBot />} */}
+      {!isChatbot && <GlobalChatBot />}
     </>
   )
 }

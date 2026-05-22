@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
 import './Chatview.css'
 import axios from 'axios'
+import { useEffect, useRef, useState } from 'react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 
 const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
@@ -911,7 +911,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
       </div>
 
       {/* Quick Options Area (Sticky at bottom, above input) */}
-      {/* {(currentStep === 'type' || currentStep === 'sub-option') && (
+      {(currentStep === 'type' || currentStep === 'sub-option') && (
         <div className="chatbot-quick-options">
           <div className="quick-options-header">
             <span className="options-label">
@@ -956,7 +956,7 @@ const Chatview = ({ isOpen, onClose, isEmbedded = false }) => {
             </div>
           )}
         </div>
-      )} */}
+      )}
 
       {/* Footer / Message Input */}
       {currentStep !== 'success' && (

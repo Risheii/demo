@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['ocelot-equal-hunting.ngrok-free.dev'],
+    allowedHosts: ['ocelot-equal-hunting.ngrok-free.dev', 'implicatively-dgag-kamila.ngrok-free.dev'],
     proxy: {
       '/proxy': {
         target: 'https://stagingapi.surveybooker.co.uk',

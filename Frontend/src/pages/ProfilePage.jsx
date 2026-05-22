@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
 import { Container, Card, Form, Button, Row, Col, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateProfile, uploadProfileImage } from '../store/authSlice';
+import { useEffect, useRef, useState } from 'react';
 
 const ProfilePage = () => {
-    const { user, error } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
 
@@ -12,8 +12,9 @@ const ProfilePage = () => {
         username: '',
         mobile: '',
     });
-    const [selectedFile, setSelectedFile] = useState(null);
+    // const [selectedFile, setSelectedFile] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
@@ -33,6 +34,21 @@ const ProfilePage = () => {
         const file = e.target.files[0];
         if (!file) return;
 
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!allowedTypes.includes(file.type)) {
+            setSuccessMessage('');
+            setErrorMessage('Invalid file type. Only JPEG, PNG, and JPG are allowed.');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            setSuccessMessage('');
+            setErrorMessage('File size should be less than 5MB');
+            return;
+        }
+
         setUpdating(true);
         setSuccessMessage('');
         const data = new FormData();
@@ -41,6 +57,7 @@ const ProfilePage = () => {
         try {
             await dispatch(uploadProfileImage(data)).unwrap();
             setSuccessMessage('Profile image updated successfully');
+            setErrorMessage('');
             e.target.value = ''; // Reset input
         } catch (err) {
             console.error(err);
@@ -52,7 +69,7 @@ const ProfilePage = () => {
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         setUpdating(true);
-        setSuccessMessage('');
+        setSuccessMessage('');        
         try {
             await dispatch(updateProfile(formData)).unwrap();
             setSuccessMessage('Profile updated successfully');
@@ -96,7 +113,7 @@ const ProfilePage = () => {
                                         type="file"
                                         ref={fileInputRef}
                                         onChange={handleFileChange}
-                                        accept="image/*"
+                                        accept=".jpg, .jpeg, .png"
                                         style={{ display: 'none' }}
                                     />
                                 </div>
@@ -108,7 +125,7 @@ const ProfilePage = () => {
                             </div>
 
                             {successMessage && <Alert variant="success">{successMessage}</Alert>}
-                            {error && <Alert variant="danger">{error}</Alert>}
+                            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
                             <hr className="my-4" />
 
